@@ -1,4 +1,4 @@
-package org.timowa.megabazar.dto.mapper;
+package org.timowa.megabazar.mapper;
 
 import org.springframework.stereotype.Component;
 import org.timowa.megabazar.database.entity.User;

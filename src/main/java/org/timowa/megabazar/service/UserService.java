@@ -8,10 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.UserRepository;
+import org.timowa.megabazar.dto.UserInfoDto;
 import org.timowa.megabazar.dto.UserReadDto;
 import org.timowa.megabazar.dto.UserRegistrationDto;
-import org.timowa.megabazar.dto.mapper.UserReadMapper;
-import org.timowa.megabazar.dto.mapper.UserRegMapper;
+import org.timowa.megabazar.exception.UserNotFoundException;
+import org.timowa.megabazar.mapper.UserInfoMapper;
+import org.timowa.megabazar.mapper.UserReadMapper;
+import org.timowa.megabazar.mapper.UserRegMapper;
 import org.timowa.megabazar.exception.UserAlreadyExistsException;
 
 import java.time.LocalDateTime;
@@ -28,6 +31,7 @@ public class UserService {
 
     private final UserRegMapper userRegMapper;
     private final UserReadMapper userReadMapper;
+    private final UserInfoMapper userInfoMapper;
 
     public UserReadDto registration(@Valid UserRegistrationDto userRegDto) {
         log.info("Attempting to register user with email: {}", userRegDto.getEmail());
@@ -43,5 +47,13 @@ public class UserService {
         User savedUser = userRepository.save(user);
         log.info("User registered successfully with ID: {}", savedUser.getId());
         return userReadMapper.map(savedUser);
+    }
+
+    public UserInfoDto getUser(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User with id " + userId + " not found");
+        }
+        return userInfoMapper.map(user.get());
     }
 }

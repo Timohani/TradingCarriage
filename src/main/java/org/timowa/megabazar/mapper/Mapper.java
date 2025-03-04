@@ -1,4 +1,4 @@
-package org.timowa.megabazar.dto.mapper;
+package org.timowa.megabazar.mapper;
 
 public interface Mapper<F, T> {
     T map(F fromObject);

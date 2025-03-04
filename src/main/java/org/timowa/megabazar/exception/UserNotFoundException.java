@@ -1,0 +1,7 @@
+package org.timowa.megabazar.exception;
+
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(String message) {
+        super(message);
+    }
+}
