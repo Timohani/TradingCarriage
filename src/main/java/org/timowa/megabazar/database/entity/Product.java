@@ -8,13 +8,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
+@Entity
 @Table(name = "products")
 public class Product {
     @Id

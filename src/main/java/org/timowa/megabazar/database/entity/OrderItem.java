@@ -7,13 +7,14 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
+@Entity
 @Table(name = "order_items")
 public class OrderItem {
     @Id

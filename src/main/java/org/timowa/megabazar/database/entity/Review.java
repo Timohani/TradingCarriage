@@ -7,13 +7,14 @@ import org.hibernate.proxy.HibernateProxy;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
+@Entity
 @Table(name = "reviews")
 public class Review {
     @Id

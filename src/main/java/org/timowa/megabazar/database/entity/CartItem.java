@@ -6,13 +6,14 @@ import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
+@Entity
 @Table(name = "cart_items")
 public class CartItem {
     @Id

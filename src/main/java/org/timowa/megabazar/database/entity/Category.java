@@ -7,13 +7,14 @@ import org.hibernate.proxy.HibernateProxy;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
+@Entity
 @Table(name = "categories")
 public class Category {
     @Id
