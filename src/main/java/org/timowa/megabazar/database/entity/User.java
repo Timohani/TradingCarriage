@@ -32,7 +32,8 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String role = "USER";
+    @Enumerated
+    private Role role = Role.USER;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
