@@ -3,6 +3,7 @@ package org.timowa.megabazar.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.timowa.megabazar.database.entity.Role;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +17,7 @@ public class UserInfoDto {
 
     private String email;
 
-    private String role;
+    private Role role;
 
     private LocalDateTime createdAt;
 }
