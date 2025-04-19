@@ -1,10 +1,12 @@
 package org.timowa.megabazar.dto.product;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import jakarta.validation.constraints.*;
 import org.timowa.megabazar.database.entity.Category;
 
 @Getter
+@AllArgsConstructor
 public class ProductCreateEditDto {
     @NotEmpty
     @NotNull

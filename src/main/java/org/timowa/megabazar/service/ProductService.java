@@ -1,8 +1,10 @@
 package org.timowa.megabazar.service;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.repository.ProductRepository;
@@ -19,11 +21,13 @@ import java.util.Optional;
 @Slf4j
 @Service
 @Validated
+@RequiredArgsConstructor
+@Transactional
 public class ProductService {
 
-    private ProductRepository productRepository;
-    private ProductReadMapper productReadMapper;
-    private ProductCreateMapper productCreateMapper;
+    private final ProductRepository productRepository;
+    private final ProductReadMapper productReadMapper;
+    private final ProductCreateMapper productCreateMapper;
 
     public ProductReadDto findById(Long id) {
         Optional<Product> maybeProduct = productRepository.findById(id);
