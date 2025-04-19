@@ -1,8 +1,9 @@
-package org.timowa.megabazar.mapper;
+package org.timowa.megabazar.mapper.user;
 
 import org.springframework.stereotype.Component;
 import org.timowa.megabazar.database.entity.User;
-import org.timowa.megabazar.dto.UserReadDto;
+import org.timowa.megabazar.dto.user.UserReadDto;
+import org.timowa.megabazar.mapper.Mapper;
 
 @Component
 public class UserReadMapper implements Mapper<User, UserReadDto> {

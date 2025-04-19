@@ -1,4 +1,4 @@
-package org.timowa.megabazar.dto;
+package org.timowa.megabazar.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import org.timowa.megabazar.dto.UserInfoDto;
-import org.timowa.megabazar.dto.UserReadDto;
-import org.timowa.megabazar.dto.UserRegistrationDto;
+import org.timowa.megabazar.dto.user.UserInfoDto;
+import org.timowa.megabazar.dto.user.UserReadDto;
+import org.timowa.megabazar.dto.user.UserRegistrationDto;
 import org.timowa.megabazar.exception.UserAlreadyExistsException;
 import org.timowa.megabazar.exception.UserNotFoundException;
 
