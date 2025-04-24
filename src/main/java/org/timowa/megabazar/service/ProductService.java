@@ -2,7 +2,6 @@ package org.timowa.megabazar.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -18,7 +17,6 @@ import org.timowa.megabazar.mapper.product.ProductReadMapper;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Service
 @Validated
 @RequiredArgsConstructor
