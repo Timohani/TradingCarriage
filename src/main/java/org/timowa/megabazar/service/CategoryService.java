@@ -16,6 +16,7 @@ import org.timowa.megabazar.mapper.category.CategoryCreateMapper;
 import org.timowa.megabazar.mapper.category.CategoryReadMapper;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -46,9 +47,11 @@ public class CategoryService {
     }
 
     public void delete(Long id) {
-        if (categoryRepository.findById(id).isEmpty()) {
+        Optional<Category> category = categoryRepository.findById(id);
+        if (category.isEmpty()) {
             throw new CategoryNotFoundException("Category with id: " + id + " not found");
         }
+        category.get().getProducts().forEach(product -> product.setCategory(null));
         categoryRepository.deleteById(id);
     }
 }
