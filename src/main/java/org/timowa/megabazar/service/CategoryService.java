@@ -1,11 +1,13 @@
 package org.timowa.megabazar.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.Category;
 import org.timowa.megabazar.database.repository.CategoryRepository;
 import org.timowa.megabazar.dto.category.CategoryCreateDto;
@@ -18,7 +20,9 @@ import org.timowa.megabazar.mapper.category.CategoryReadMapper;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
+@Validated
 @Transactional
 @RequiredArgsConstructor
 public class CategoryService {
@@ -26,7 +30,7 @@ public class CategoryService {
     private final CategoryCreateMapper categoryCreateMapper;
     private final CategoryReadMapper categoryReadMapper;
 
-    public CategoryReadDto createCategory(CategoryCreateDto createDto) {
+    public CategoryReadDto createCategory(@Valid CategoryCreateDto createDto) {
         if (categoryRepository.findByName(createDto.getName()).isPresent()) {
             throw new CategoryAlreadyExistsException("Category with name: " + createDto.getName() + " already exists");
         }
@@ -34,12 +38,16 @@ public class CategoryService {
         return categoryReadMapper.map(savedCategory);
     }
 
-    public List<Category> findAll() {
-        return categoryRepository.findAll();
+    public CategoryReadDto findById(Long id) {
+        Optional<Category> checkCategory = categoryRepository.findById(id);
+        if (checkCategory.isEmpty()) {
+            throw new CategoryNotFoundException("Category with id: " + id + " not found");
+        }
+        return categoryReadMapper.map(checkCategory.get());
     }
 
-    public List<Category> findAll(Sort sort) {
-        return categoryRepository.findAll(sort);
+    public List<Category> findAll() {
+        return categoryRepository.findAll();
     }
 
     public Page<Category> findAll(Pageable pageable) {
@@ -51,7 +59,10 @@ public class CategoryService {
         if (category.isEmpty()) {
             throw new CategoryNotFoundException("Category with id: " + id + " not found");
         }
-        category.get().getProducts().forEach(product -> product.setCategory(null));
+        if (category.get().getProducts() != null)
+            category.get().getProducts().forEach(product -> product.setCategory(null));
         categoryRepository.deleteById(id);
+        String successDelete = "Category with id: " + id + " successfully deleted";
+        log.info(successDelete);
     }
 }

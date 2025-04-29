@@ -12,7 +12,6 @@ public class CategoryCreateMapper implements Mapper<CategoryCreateDto, Category>
         Category category = new Category();
         category.setName(createDto.getName());
         category.setDescription(createDto.getDescription());
-        category.setProducts(createDto.getProducts());
         return category;
     }
 }
