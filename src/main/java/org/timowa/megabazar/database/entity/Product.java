@@ -53,6 +53,10 @@ public class Product {
     @ToString.Exclude
     private List<Review> reviews;
 
+    public boolean isAvailable() {
+        return quantity > 0;
+    }
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
