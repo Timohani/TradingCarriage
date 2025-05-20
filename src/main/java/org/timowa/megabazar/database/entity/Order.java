@@ -29,8 +29,7 @@ public class Order {
     @Column(name = "total_price", nullable = false)
     private double totalPrice;
 
-    @Column(nullable = false)
-    private String status = "PENDING";
+    private String status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

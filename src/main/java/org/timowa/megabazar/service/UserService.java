@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.timowa.megabazar.database.entity.Cart;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.UserRepository;
 import org.timowa.megabazar.dto.user.UserInfoDto;
@@ -35,16 +36,24 @@ public class UserService {
 
     public UserReadDto registration(@Valid UserRegistrationDto userRegDto) {
         log.info("Attempting to register user with email: {}", userRegDto.getEmail());
+
         Optional<User> checkUser = userRepository.findByEmailOrUsername(
                 userRegDto.getEmail(),
                 userRegDto.getUsername());
         if (checkUser.isPresent()) {
             throw new UserAlreadyExistsException("User is already exists");
         }
+
         User user = userRegMapper.map(userRegDto);
         user.setCreatedAt(LocalDateTime.now());
 
+        Cart cart = new Cart();
+        cart.setCreatedAt(LocalDateTime.now());
+        cart.setUser(user);
+        user.setCart(cart);
+
         User savedUser = userRepository.save(user);
+
         log.info("User registered successfully with ID: {}", savedUser.getId());
         return userReadMapper.map(savedUser);
     }
