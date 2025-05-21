@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.Cart;
 import org.timowa.megabazar.database.entity.User;
+import org.timowa.megabazar.database.entity.Role;
 import org.timowa.megabazar.database.repository.UserRepository;
 import org.timowa.megabazar.dto.user.UserInfoDto;
 import org.timowa.megabazar.dto.user.UserReadDto;
@@ -45,6 +46,7 @@ public class UserService {
         }
 
         User user = userRegMapper.map(userRegDto);
+        used.setRole(Role.USER);
         user.setCreatedAt(LocalDateTime.now());
 
         Cart cart = new Cart();
