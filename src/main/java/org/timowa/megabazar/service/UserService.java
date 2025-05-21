@@ -46,7 +46,7 @@ public class UserService {
         }
 
         User user = userRegMapper.map(userRegDto);
-        used.setRole(Role.USER);
+        user.setRole(Role.USER);
         user.setCreatedAt(LocalDateTime.now());
 
         Cart cart = new Cart();
