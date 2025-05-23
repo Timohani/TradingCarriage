@@ -8,16 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.Cart;
 import org.timowa.megabazar.database.entity.User;
-import org.timowa.megabazar.database.entity.Role;
 import org.timowa.megabazar.database.repository.UserRepository;
 import org.timowa.megabazar.dto.user.UserInfoDto;
 import org.timowa.megabazar.dto.user.UserReadDto;
 import org.timowa.megabazar.dto.user.UserRegistrationDto;
+import org.timowa.megabazar.exception.UserAlreadyExistsException;
 import org.timowa.megabazar.exception.UserNotFoundException;
 import org.timowa.megabazar.mapper.user.UserInfoMapper;
 import org.timowa.megabazar.mapper.user.UserReadMapper;
 import org.timowa.megabazar.mapper.user.UserRegMapper;
-import org.timowa.megabazar.exception.UserAlreadyExistsException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,21 +37,16 @@ public class UserService {
     public UserReadDto registration(@Valid UserRegistrationDto userRegDto) {
         log.info("Attempting to register user with email: {}", userRegDto.getEmail());
 
-        Optional<User> checkUser = userRepository.findByEmailOrUsername(
-                userRegDto.getEmail(),
-                userRegDto.getUsername());
-        if (checkUser.isPresent()) {
+        if (userRepository.existsByUsernameOrEmail(userRegDto.getUsername(), userRegDto.getEmail())) {
             throw new UserAlreadyExistsException("User is already exists");
         }
 
         User user = userRegMapper.map(userRegDto);
-        user.setRole(Role.USER);
-        user.setCreatedAt(LocalDateTime.now());
 
         Cart cart = new Cart();
         cart.setCreatedAt(LocalDateTime.now());
-        cart.setUser(user);
         user.setCart(cart);
+        cart.setUser(user);
 
         User savedUser = userRepository.save(user);
 
