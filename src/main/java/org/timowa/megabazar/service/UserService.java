@@ -70,7 +70,8 @@ public class UserService {
         return user.get();
     }
 
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public Page<UserInfoDto> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(userInfoMapper::map);
     }
 }
