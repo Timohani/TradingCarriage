@@ -88,14 +88,14 @@ class UserServiceTest {
     @Test
     void getTest() {
         assertThrows(UserNotFoundException.class,
-                () -> service.getUser(993L));
+                () -> service.getUserById(993L));
 
         UserRegistrationDto userToSave = new UserRegistrationDto(
                 "pavel",
                 "pavel229@mail.ru",
                 "22882");
         UserReadDto user = service.registration(userToSave);
-        UserInfoDto findUser = service.getUser(user.getId());
+        UserInfoDto findUser = service.getUserById(user.getId());
         assertEquals(user.getUsername(), findUser.getUsername());
     }
 }
