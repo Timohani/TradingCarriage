@@ -3,6 +3,8 @@ package org.timowa.megabazar.service;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -40,7 +42,6 @@ public class UserService {
         if (userRepository.existsByUsernameOrEmail(userRegDto.getUsername(), userRegDto.getEmail())) {
             throw new UserAlreadyExistsException("User is already exists");
         }
-
         User user = userRegMapper.map(userRegDto);
 
         Cart cart = new Cart();
@@ -49,7 +50,6 @@ public class UserService {
         cart.setUser(user);
 
         User savedUser = userRepository.save(user);
-
         log.info("User registered successfully with ID: {}", savedUser.getId());
         return userReadMapper.map(savedUser);
     }
@@ -68,5 +68,9 @@ public class UserService {
             throw new UserNotFoundException("User with username " + username + " not found");
         }
         return user.get();
+    }
+
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 }
