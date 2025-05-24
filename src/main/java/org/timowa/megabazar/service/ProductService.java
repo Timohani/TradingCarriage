@@ -2,10 +2,13 @@ package org.timowa.megabazar.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.Product;
+import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.ProductRepository;
 import org.timowa.megabazar.dto.product.ProductCreateEditDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
@@ -26,6 +29,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductReadMapper productReadMapper;
     private final ProductCreateMapper productCreateMapper;
+    private final UserService userService;
 
     public ProductReadDto findById(Long id) {
         Optional<Product> maybeProduct = productRepository.findById(id);
@@ -43,7 +47,10 @@ public class ProductService {
         if (productRepository.findByName(createDto.getName()).isPresent()) {
             throw new ProductAlreadyExistsException("Product with name: " + createDto.getName() + " already exists");
         }
-        Product savedProduct = productRepository.save(productCreateMapper.map(createDto));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userService.getUserByUsername(username);
+        Product savedProduct = productRepository.save(productCreateMapper.map(createDto, user));
         return productReadMapper.map(savedProduct);
     }
 

@@ -53,6 +53,11 @@ public class Product {
     @ToString.Exclude
     private List<Review> reviews;
 
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User creator;
+
     public boolean isAvailable() {
         return quantity > 0;
     }

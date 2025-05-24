@@ -23,4 +23,6 @@ public class ProductCreateEditDto {
     private int quantity;
 
     private Category category;
+
+    private String creator;
 }

@@ -21,4 +21,8 @@ public class ProductReadDto {
     private int quantity;
 
     private Category category;
+
+    private boolean isAvailable;
+
+    private String creator;
 }

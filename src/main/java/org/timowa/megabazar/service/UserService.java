@@ -54,11 +54,19 @@ public class UserService {
         return userReadMapper.map(savedUser);
     }
 
-    public UserInfoDto getUser(Long userId) {
+    public UserInfoDto getUserById(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             throw new UserNotFoundException("User with id " + userId + " not found");
         }
         return userInfoMapper.map(user.get());
+    }
+
+    public User getUserByUsername(String username) {
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User with username " + username + " not found");
+        }
+        return user.get();
     }
 }
