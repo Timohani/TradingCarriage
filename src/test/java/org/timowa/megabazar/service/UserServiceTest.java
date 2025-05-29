@@ -47,7 +47,7 @@ class UserServiceTest {
         UserRegistrationDto validUser = new UserRegistrationDto(
                 "oleg",
                 "oleg@gmail.com",
-                "1234"
+                "123456"
         );
 
         // When
@@ -73,7 +73,7 @@ class UserServiceTest {
         UserRegistrationDto validUser = new UserRegistrationDto(
                 "existingUser",
                 "existing@gmail.com",
-                "1234"
+                "123456"
         );
 
         // First registration (should succeed)
@@ -93,7 +93,7 @@ class UserServiceTest {
         UserRegistrationDto userToSave = new UserRegistrationDto(
                 "pavel",
                 "pavel229@mail.ru",
-                "22882");
+                "2288254");
         UserReadDto user = service.registration(userToSave);
         UserInfoDto findUser = service.getUserById(user.getId());
         assertEquals(user.getUsername(), findUser.getUsername());
