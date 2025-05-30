@@ -2,6 +2,8 @@ package org.timowa.megabazar.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,10 @@ public class ProductService {
     private final ProductReadMapper productReadMapper;
     private final ProductCreateMapper productCreateMapper;
     private final UserService userService;
+
+    public Page<ProductReadDto> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable).map(productReadMapper::map);
+    }
 
     public ProductReadDto findById(Long id) {
         Optional<Product> maybeProduct = productRepository.findById(id);

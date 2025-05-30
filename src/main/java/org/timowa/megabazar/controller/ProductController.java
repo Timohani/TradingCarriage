@@ -30,10 +30,9 @@ public class ProductController {
 
     private final ObjectMapper objectMapper;
 
-    // TODO: fix loop bug
     @GetMapping
-    public PagedModel<Product> getAll(@ParameterObject Pageable pageable) {
-        Page<Product> products = productRepository.findAll(pageable);
+    public PagedModel<ProductReadDto> getAll(@ParameterObject Pageable pageable) {
+        Page<ProductReadDto> products = productService.findAll(pageable);
         return new PagedModel<>(products);
     }
 
