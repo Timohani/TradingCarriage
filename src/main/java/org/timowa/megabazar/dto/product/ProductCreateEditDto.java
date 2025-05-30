@@ -1,12 +1,14 @@
 package org.timowa.megabazar.dto.product;
 
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import jakarta.validation.constraints.*;
-import org.timowa.megabazar.database.entity.Category;
+import lombok.Setter;
 
 @Getter
-@AllArgsConstructor
+@Setter
 public class ProductCreateEditDto {
     @NotEmpty
     @NotNull
@@ -22,7 +24,12 @@ public class ProductCreateEditDto {
     @Min(value = 1)
     private int quantity;
 
-    private Category category;
-
     private String creator;
+
+    public ProductCreateEditDto(String name, String description, double price, int quantity) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.quantity = quantity;
+    }
 }

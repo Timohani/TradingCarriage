@@ -15,7 +15,6 @@ public class ProductCreateMapper implements Mapper<ProductCreateEditDto, Product
         product.setDescription(createEditDto.getDescription());
         product.setPrice(createEditDto.getPrice());
         product.setQuantity(createEditDto.getQuantity());
-        product.setCategory(createEditDto.getCategory());
         return product;
     }
 
@@ -25,7 +24,6 @@ public class ProductCreateMapper implements Mapper<ProductCreateEditDto, Product
         product.setDescription(createEditDto.getDescription());
         product.setPrice(createEditDto.getPrice());
         product.setQuantity(createEditDto.getQuantity());
-        product.setCategory(createEditDto.getCategory());
         product.setCreator(user);
         return product;
     }

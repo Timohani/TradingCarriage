@@ -17,7 +17,6 @@ import org.timowa.megabazar.exception.ProductNotFoundException;
 import org.timowa.megabazar.mapper.product.ProductCreateMapper;
 import org.timowa.megabazar.mapper.product.ProductReadMapper;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,10 +36,6 @@ public class ProductService {
             throw new ProductNotFoundException("Product with id " + id + " not found");
         }
         return productReadMapper.map(maybeProduct.get());
-    }
-
-    public List<Product> findAll() {
-        return productRepository.findAll();
     }
 
     public ProductReadDto create(@Valid ProductCreateEditDto createDto) {

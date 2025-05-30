@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.timowa.megabazar.dto.PageDto;
 import org.timowa.megabazar.dto.user.UserInfoDto;
 import org.timowa.megabazar.service.UserService;
 
@@ -27,21 +25,8 @@ public class UserController {
     }
 
     @GetMapping
-    public PageDto<UserInfoDto> getAllUsers(
-            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.ASC)
-            @ParameterObject Pageable pageable) {
-
+    public PagedModel<UserInfoDto> getAllUsers(@ParameterObject Pageable pageable) {
         Page<UserInfoDto> userPage = userService.findAll(pageable);
-        return convertToPageDto(userPage);
-    }
-
-    private PageDto<UserInfoDto> convertToPageDto(Page<UserInfoDto> page) {
-        return new PageDto<>(
-                page.getContent(),
-                page.getNumber(),
-                page.getSize(),
-                page.getTotalElements(),
-                page.getTotalPages()
-        );
+        return new PagedModel<>(userPage);
     }
 }

@@ -51,9 +51,7 @@ class ProductServiceTest {
                 "Фен",
                 "Хороший фен, всё высушит",
                 39999.99,
-                52,
-                null,
-                testUser.getUsername()
+                52
         );
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();
@@ -72,9 +70,7 @@ class ProductServiceTest {
                 "",
                 "Из китая",
                 -12.6,
-                0,
-                null,
-                testUser.getUsername()
+                0
         );
         assertThrows(ConstraintViolationException.class, () -> productService.create(invalidDto));
     }
