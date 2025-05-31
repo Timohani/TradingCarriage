@@ -65,4 +65,12 @@ public class ProductService {
         Product savedProduct = productRepository.save(product);
         return productReadMapper.map(savedProduct);
     }
+
+    public void delete(Long id) {
+        User user = userService.getLoginUser();
+        Product product = productRepository.findById(id).orElse(null);
+        if (product != null && productRepository.findCreator(id).equals(user)) {
+            productRepository.delete(product);
+        }
+    }
 }

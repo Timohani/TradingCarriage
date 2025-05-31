@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.timowa.megabazar.database.entity.Product;
@@ -76,12 +77,9 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public Product delete(@PathVariable Long id) {
-        Product product = productRepository.findById(id).orElse(null);
-        if (product != null) {
-            productRepository.delete(product);
-        }
-        return product;
+    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
+        productService.delete(id);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
