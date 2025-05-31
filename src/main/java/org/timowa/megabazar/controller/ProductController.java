@@ -77,13 +77,19 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         productService.delete(id);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
-    public void deleteMany(@RequestParam List<Long> ids) {
+    public ResponseEntity<Void> deleteMany(@RequestParam List<Long> ids) {
         productRepository.deleteAllById(ids);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}")
+    public ProductReadDto addQuantity(@PathVariable Long id, @RequestParam Integer addAmount) {
+        return productService.addQuantity(id, addAmount);
     }
 }
