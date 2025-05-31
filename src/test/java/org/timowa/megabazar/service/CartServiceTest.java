@@ -12,6 +12,7 @@ import org.timowa.megabazar.database.entity.*;
 import org.timowa.megabazar.database.repository.CartItemRepository;
 import org.timowa.megabazar.database.repository.ProductRepository;
 import org.timowa.megabazar.database.repository.UserRepository;
+import org.timowa.megabazar.dto.cartItem.CartItemReadDto;
 import org.timowa.megabazar.exception.CartLimitExceededException;
 import org.timowa.megabazar.exception.ProductNotAvailableException;
 
@@ -29,10 +30,8 @@ class CartServiceTest {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private ProductRepository productRepository;
-
     @Autowired
     private CartItemRepository cartItemRepository;
 
@@ -76,12 +75,12 @@ class CartServiceTest {
     @Test
     void addItemToCart_shouldAddNewItem() throws CartLimitExceededException, ProductNotAvailableException {
         // Act
-        CartItem result = cartService.addItemToCart(testProduct.getId());
+        CartItemReadDto result = cartService.addItemToCart(testProduct.getId());
 
         // Assert
         assertNotNull(result.getId());
         assertEquals(1, result.getQuantity());
-        assertEquals(testProduct, result.getProduct());
+        assertEquals(testProduct.getId(), result.getProductId());
     }
 
     @Test
@@ -90,7 +89,7 @@ class CartServiceTest {
         cartService.addItemToCart(testProduct.getId());
 
         // Act - добавляем тот же товар ещё раз
-        CartItem result = cartService.addItemToCart(testProduct.getId());
+        CartItemReadDto result = cartService.addItemToCart(testProduct.getId());
 
         // Assert
         assertEquals(2, result.getQuantity());
@@ -112,6 +111,26 @@ class CartServiceTest {
         // Act & Assert
         assertThrows(ProductNotAvailableException.class,
                 () -> cartService.addItemToCart(testProduct.getId()));
+    }
+
+    @Test
+    void removeItemFromCart_shouldRemove1Quantity() throws CartLimitExceededException, ProductNotAvailableException {
+        Product product = productRepository.save(testProduct);
+        CartItemReadDto item = null;
+        for (int i = 0; i < 3; i++) {
+            item = cartService.addItemToCart(product.getId());
+        }
+        cartService.removeItemFromCart(product.getId());
+        assertEquals(2, item.getQuantity());
+    }
+
+    @Test
+    void removeItemFromCart_shouldRemoveItem() throws CartLimitExceededException, ProductNotAvailableException {
+        Product product = productRepository.save(testProduct);
+        cartService.addItemToCart(product.getId());
+
+        CartItemReadDto item = cartService.removeItemFromCart(product.getId());
+        assertEquals(new CartItemReadDto(), item);
     }
 
     @Test
