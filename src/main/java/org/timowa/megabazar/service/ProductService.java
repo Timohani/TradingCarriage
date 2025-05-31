@@ -12,10 +12,12 @@ import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.ProductRepository;
+import org.timowa.megabazar.database.repository.UserRepository;
 import org.timowa.megabazar.dto.product.ProductCreateEditDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.exception.ProductAlreadyExistsException;
 import org.timowa.megabazar.exception.ProductNotFoundException;
+import org.timowa.megabazar.exception.UserNotFoundException;
 import org.timowa.megabazar.mapper.product.ProductCreateMapper;
 import org.timowa.megabazar.mapper.product.ProductReadMapper;
 
@@ -31,6 +33,8 @@ public class ProductService {
     private final ProductReadMapper productReadMapper;
     private final ProductCreateMapper productCreateMapper;
     private final UserService userService;
+
+    private final UserRepository userRepository;
 
     public Page<ProductReadDto> findAll(Pageable pageable) {
         return productRepository.findAll(pageable).map(productReadMapper::map);
@@ -68,9 +72,12 @@ public class ProductService {
 
     public void delete(Long id) {
         User user = userService.getLoginUser();
-        Product product = productRepository.findById(id).orElse(null);
-        if (product != null && productRepository.findCreator(id).equals(user)) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + "not found"));
+        if (userRepository.findByProduct_Id(id).equals(user)) {
             productRepository.delete(product);
+            return;
         }
+        throw new UserNotFoundException("User not found");
     }
 }
