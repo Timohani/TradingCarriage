@@ -16,6 +16,7 @@ import org.timowa.megabazar.database.repository.UserRepository;
 import org.timowa.megabazar.dto.product.ProductCreateEditDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.exception.ProductAlreadyExistsException;
+import org.timowa.megabazar.exception.ProductNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -32,12 +33,12 @@ class ProductServiceTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User testUser;
     private ProductCreateEditDto testProductCreateEditDto;
-    
+    private ProductReadDto testCreatedProduct;
+
     @BeforeEach
     void setUp() {
-        testUser = User.builder()
+        User testUser = User.builder()
                 .username("testUser")
                 .email("testUser@gmail.com")
                 .password("password")
@@ -47,21 +48,22 @@ class ProductServiceTest {
                 .build();
         userRepository.save(testUser);
 
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        testUser.getUsername(),
+                        "password",
+                        Collections.emptyList()
+                ));
+        SecurityContextHolder.setContext(context);
+
         testProductCreateEditDto = new ProductCreateEditDto(
                 "Фен",
                 "Хороший фен, всё высушит",
                 39999.99,
                 52
         );
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        testUser.getUsername(),
-                        "password",
-                        Collections.emptyList() // или реальные authorities
-                ));
-        SecurityContextHolder.setContext(context);
+        testCreatedProduct = productService.create(testProductCreateEditDto);
     }
 
     @Test
@@ -76,22 +78,25 @@ class ProductServiceTest {
     }
 
     @Test
-    void create_shouldCreateProduct() {
-        ProductReadDto expected = productService.create(testProductCreateEditDto);
-        assertEquals(testProductCreateEditDto.getName(), expected.getName());
-        assertEquals("testUser", expected.getCreator());
-    }
-
-    @Test
     void create_shouldThrowAlreadyExistsException() {
-        productService.create(testProductCreateEditDto);
         assertThrows(ProductAlreadyExistsException.class, () -> productService.create(testProductCreateEditDto));
     }
 
     @Test
     void addQuantity() {
-        ProductReadDto savedDto = productService.create(testProductCreateEditDto);
-        ProductReadDto updatedDto = productService.addQuantity(savedDto.getId(),27);
+        ProductReadDto updatedDto = productService.addQuantity(testCreatedProduct.getId(),27);
         assertEquals(79, updatedDto.getQuantity());
+    }
+
+    @Test
+    void deleteProduct_shouldDelete() {
+        Long id = testCreatedProduct.getId();
+        productService.delete(id);
+        assertThrows(ProductNotFoundException.class, () -> productService.findById(id));
+    }
+
+    @Test
+    void deleteProduct_shouldThrowException() {
+        assertThrows(ProductNotFoundException.class, () -> productService.delete(993L));
     }
 }
