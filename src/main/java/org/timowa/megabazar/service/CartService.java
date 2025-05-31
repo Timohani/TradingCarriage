@@ -13,19 +13,25 @@ import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.CartItemRepository;
 import org.timowa.megabazar.database.repository.ProductRepository;
 import org.timowa.megabazar.database.repository.UserRepository;
+import org.timowa.megabazar.dto.cartItem.CartItemReadDto;
+import org.timowa.megabazar.exception.CartItemNotFoundException;
 import org.timowa.megabazar.exception.CartLimitExceededException;
 import org.timowa.megabazar.exception.ProductNotAvailableException;
 import org.timowa.megabazar.exception.ProductNotFoundException;
+import org.timowa.megabazar.mapper.cartItem.CartItemReadMapper;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class CartService {
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
+
+    private final CartItemReadMapper cartItemReadMapper;
 
     public Cart getCurrentUserCart() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -37,8 +43,7 @@ public class CartService {
         return user.getCart();
     }
 
-    @Transactional
-    public CartItem addItemToCart(Long productId) throws ProductNotAvailableException, CartLimitExceededException {
+    public CartItemReadDto addItemToCart(Long productId) throws ProductNotAvailableException, CartLimitExceededException {
         Cart currentCart = getCurrentUserCart();
 
         Product product = productRepository.findById(productId)
@@ -49,14 +54,13 @@ public class CartService {
 
         Optional<CartItem> existingItem = cartItemRepository
                 .findByCartAndProduct(currentCart, product);
-        if (existingItem.isPresent() && existingItem.get().getQuantity() >= product.getQuantity()) {
-            throw new CartLimitExceededException("Maximum quantity reached");
-        }
-
         if (existingItem.isPresent()) {
+            if (existingItem.get().getQuantity() >= product.getQuantity()) {
+                throw new CartLimitExceededException("Maximum quantity reached");
+            }
             CartItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + 1);
-            return cartItemRepository.save(item);
+            return cartItemReadMapper.map(cartItemRepository.save(item));
         }
 
         CartItem newItem = CartItem.builder()
@@ -65,6 +69,23 @@ public class CartService {
                 .quantity(1)
                 .build();
 
-        return cartItemRepository.save(newItem);
+        return cartItemReadMapper.map(cartItemRepository.save(newItem));
+    }
+
+    public CartItemReadDto removeItemFromCart(Long productId) {
+        Cart currentCart = getCurrentUserCart();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        CartItem item = cartItemRepository
+                .findByCartAndProduct(currentCart, product)
+                .orElseThrow(() -> new CartItemNotFoundException("CartItem not found"));
+
+        if (item.getQuantity() > 1) {
+            item.setQuantity(item.getQuantity() - 1);
+            return cartItemReadMapper.map(cartItemRepository.save(item));
+        }
+        cartItemRepository.delete(item);
+        return new CartItemReadDto();
     }
 }
