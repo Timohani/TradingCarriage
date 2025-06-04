@@ -116,12 +116,14 @@ class CartServiceTest {
     @Test
     void removeItemFromCart_shouldRemove1Quantity() throws CartLimitExceededException, ProductNotAvailableException {
         Product product = productRepository.save(testProduct);
-        CartItemReadDto item = null;
+
         for (int i = 0; i < 3; i++) {
-            item = cartService.addItemToCart(product.getId());
+            cartService.addItemToCart(product.getId());
         }
-        cartService.removeItemFromCart(product.getId());
-        assertEquals(2, item.getQuantity());
+
+        CartItemReadDto updatedItem = cartService.removeItemFromCart(product.getId());
+
+        assertEquals(2, updatedItem.getQuantity());
     }
 
     @Test
@@ -129,8 +131,10 @@ class CartServiceTest {
         Product product = productRepository.save(testProduct);
         cartService.addItemToCart(product.getId());
 
-        CartItemReadDto item = cartService.removeItemFromCart(product.getId());
-        assertEquals(new CartItemReadDto(), item);
+        cartService.removeItemFromCart(product.getId());
+
+        Cart currentCart = cartService.getCurrentUserCart();
+        assertFalse(cartItemRepository.findByCartAndProduct(currentCart, product).isPresent());
     }
 
     @Test

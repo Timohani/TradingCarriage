@@ -83,7 +83,7 @@ public class CartService {
 
         if (item.getQuantity() > 1) {
             item.setQuantity(item.getQuantity() - 1);
-            return cartItemReadMapper.map(cartItemRepository.save(item));
+            return cartItemReadMapper.map(item);
         }
         cartItemRepository.delete(item);
         return new CartItemReadDto();
