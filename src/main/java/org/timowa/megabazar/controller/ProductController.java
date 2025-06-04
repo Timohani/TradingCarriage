@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.repository.ProductRepository;
 import org.timowa.megabazar.dto.product.ProductCreateEditDto;
+import org.timowa.megabazar.dto.product.ProductListReadDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.service.ProductService;
 
@@ -32,8 +33,8 @@ public class ProductController {
     private final ObjectMapper objectMapper;
 
     @GetMapping
-    public PagedModel<ProductReadDto> getAll(@ParameterObject Pageable pageable) {
-        Page<ProductReadDto> products = productService.findAll(pageable);
+    public PagedModel<ProductListReadDto> getAll(@ParameterObject Pageable pageable) {
+        Page<ProductListReadDto> products = productService.findAll(pageable);
         return new PagedModel<>(products);
     }
 
