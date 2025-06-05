@@ -1,5 +1,6 @@
 package org.timowa.megabazar.controller;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
+@Transactional
 public class CartController {
 
     private final CartItemRepository cartItemRepository;
