@@ -13,14 +13,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.repository.ProductRepository;
+import org.timowa.megabazar.dto.cartItem.CartItemReadDto;
 import org.timowa.megabazar.dto.product.ProductCreateEditDto;
 import org.timowa.megabazar.dto.product.ProductListReadDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
+import org.timowa.megabazar.exception.CartLimitExceededException;
+import org.timowa.megabazar.exception.ProductNotAvailableException;
+import org.timowa.megabazar.service.CartService;
 import org.timowa.megabazar.service.ProductService;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/products")
@@ -29,6 +34,7 @@ public class ProductController {
 
     private final ProductRepository productRepository;
     private final ProductService productService;
+    private final CartService cartService;
 
     private final ObjectMapper objectMapper;
 
@@ -51,6 +57,11 @@ public class ProductController {
     @PostMapping
     public ProductReadDto create(@RequestBody ProductCreateEditDto createDto) {
         return productService.create(createDto);
+    }
+
+    @PostMapping("/{id}/addToCart")
+    public ResponseEntity<CartItemReadDto> addToCart(@PathVariable Long id) throws CartLimitExceededException, ProductNotAvailableException {
+        return ResponseEntity.of(Optional.of(cartService.addItemToCart(id)));
     }
 
     @PatchMapping("/{id}")
