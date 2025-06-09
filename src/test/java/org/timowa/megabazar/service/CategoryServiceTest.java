@@ -47,6 +47,8 @@ class CategoryServiceTest {
 
     @Test
     void findAllByPageable() {
+        CategoryCreateDto createDto = new CategoryCreateDto("Одежда", "");
+        categoryService.createCategory(createDto);
         Pageable sortedByProductsCount =
                 PageRequest.of(0, 10, Sort.by("name"));
         Page<Category> page = categoryService.findAll(sortedByProductsCount);
