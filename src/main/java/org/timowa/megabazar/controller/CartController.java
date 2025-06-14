@@ -45,8 +45,8 @@ public class CartController {
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
     }
 
-    @PostMapping
-    public CartItemReadDto addItemToCart(@RequestParam Long productId) throws CartLimitExceededException, ProductNotAvailableException {
+    @PostMapping("/{productId}")
+    public CartItemReadDto addItemToCart(@PathVariable Long productId) throws CartLimitExceededException, ProductNotAvailableException {
         return cartService.addItemToCart(productId);
     }
 

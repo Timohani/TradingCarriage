@@ -16,7 +16,20 @@ public class ProductReadMapper implements Mapper<Product, ProductReadDto> {
                 product.getPrice(),
                 product.getQuantity(),
                 product.getCategory(),
-                product.isAvailable(),
+                true,
+                product.getCreator().getUsername()
+        );
+    }
+
+    public ProductReadDto map(Product product, boolean isAvailable) {
+        return new ProductReadDto(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getQuantity(),
+                product.getCategory(),
+                isAvailable,
                 product.getCreator().getUsername()
         );
     }

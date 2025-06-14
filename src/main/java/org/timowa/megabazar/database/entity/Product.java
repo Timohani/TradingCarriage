@@ -58,10 +58,6 @@ public class Product {
     @JoinColumn(name = "user_id", nullable = false)
     private User creator;
 
-    public boolean isAvailable() {
-        return quantity > 0;
-    }
-
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

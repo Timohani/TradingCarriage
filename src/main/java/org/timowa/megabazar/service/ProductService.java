@@ -38,15 +38,22 @@ public class ProductService {
     private final ProductListReadMapper productListReadMapper;
 
     public Page<ProductListReadDto> findAll(Pageable pageable) {
-        return productRepository.findAll(pageable).map(productListReadMapper::map);
+        return productRepository.findAll(pageable).map(product -> productListReadMapper.map(product, isAvailable(product)));
+    }
+
+    public boolean isAvailable(Product product) {
+        return product.getQuantity() > 0;
+    }
+
+    Product getObjectById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
     }
 
     public ProductReadDto findById(Long id) {
-        Optional<Product> maybeProduct = productRepository.findById(id);
-        if (maybeProduct.isEmpty()) {
-            throw new ProductNotFoundException("Product with id " + id + " not found");
-        }
-        return productReadMapper.map(maybeProduct.get());
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
+        return productReadMapper.map(product, isAvailable(product));
     }
 
     public ProductReadDto create(@Valid ProductCreateEditDto createDto) {

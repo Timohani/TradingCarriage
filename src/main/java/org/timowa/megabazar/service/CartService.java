@@ -1,9 +1,6 @@
 package org.timowa.megabazar.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.timowa.megabazar.database.entity.Cart;
@@ -11,13 +8,11 @@ import org.timowa.megabazar.database.entity.CartItem;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.CartItemRepository;
-import org.timowa.megabazar.database.repository.ProductRepository;
-import org.timowa.megabazar.database.repository.UserRepository;
 import org.timowa.megabazar.dto.cartItem.CartItemReadDto;
+import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.exception.CartItemNotFoundException;
 import org.timowa.megabazar.exception.CartLimitExceededException;
 import org.timowa.megabazar.exception.ProductNotAvailableException;
-import org.timowa.megabazar.exception.ProductNotFoundException;
 import org.timowa.megabazar.mapper.cartItem.CartItemReadMapper;
 
 import java.util.Optional;
@@ -27,31 +22,27 @@ import java.util.Optional;
 @Service
 public class CartService {
 
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final UserService userService;
+    private final ProductService productService;
+
     private final CartItemRepository cartItemRepository;
 
     private final CartItemReadMapper cartItemReadMapper;
 
     public Cart getCurrentUserCart() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
+        User user = userService.getLoginUser();
         return user.getCart();
     }
 
     public CartItemReadDto addItemToCart(Long productId) throws ProductNotAvailableException, CartLimitExceededException {
         Cart currentCart = getCurrentUserCart();
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-        if (!product.isAvailable()) {
+        ProductReadDto productDto = productService.findById(productId);
+        if (!productDto.isAvailable()) {
             throw new ProductNotAvailableException("Product is not available");
         }
 
+        Product product = productService.getObjectById(productDto.getId());
         Optional<CartItem> existingItem = cartItemRepository
                 .findByCartAndProduct(currentCart, product);
         if (existingItem.isPresent()) {
@@ -74,8 +65,7 @@ public class CartService {
 
     public CartItemReadDto removeItemFromCart(Long productId) {
         Cart currentCart = getCurrentUserCart();
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+        Product product = productService.getObjectById(productId);
 
         CartItem item = cartItemRepository
                 .findByCartAndProduct(currentCart, product)
