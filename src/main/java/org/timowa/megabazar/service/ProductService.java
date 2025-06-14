@@ -12,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.ProductRepository;
-import org.timowa.megabazar.database.repository.UserRepository;
 import org.timowa.megabazar.dto.product.ProductCreateEditDto;
 import org.timowa.megabazar.dto.product.ProductListReadDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
@@ -33,7 +32,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
 
     private final ProductReadMapper productReadMapper;
     private final ProductCreateMapper productCreateMapper;
@@ -74,10 +72,10 @@ public class ProductService {
     }
 
     public void delete(Long id) {
-        User user = userService.getLoginUser();
+        Long userId = userService.getLoginUser().getId();
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + "not found"));
-        if (userRepository.findByProduct_Id(id).equals(user)) {
+        if (product.getCreator().getId().equals(userId)) {
             productRepository.delete(product);
             return;
         }
