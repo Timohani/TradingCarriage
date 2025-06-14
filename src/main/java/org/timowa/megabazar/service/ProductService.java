@@ -4,8 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -60,9 +58,7 @@ public class ProductService {
         if (productRepository.findByName(createDto.getName()).isPresent()) {
             throw new ProductAlreadyExistsException("Product with name: " + createDto.getName() + " already exists");
         }
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = userService.getUserByUsername(username);
+        User user = userService.getLoginUser();
         Product savedProduct = productRepository.save(productCreateMapper.map(createDto, user));
         return productReadMapper.map(savedProduct);
     }
