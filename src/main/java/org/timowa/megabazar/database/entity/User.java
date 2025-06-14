@@ -52,6 +52,7 @@ public class User implements UserDetails {
     private List<Review> reviews;
 
     @ToString.Exclude
+    @Builder.Default
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> product = new LinkedHashSet<>();
 
