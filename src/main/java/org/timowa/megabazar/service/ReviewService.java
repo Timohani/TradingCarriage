@@ -51,8 +51,8 @@ public class ReviewService {
         return reviewReadMapper.map(review);
     }
 
-    public Page<ReviewReadDto> findAll(Pageable pageable) {
-        return reviewRepository.findAll(pageable).map(reviewReadMapper::map);
+    public Page<ReviewReadDto> findAllByProductId(Pageable pageable, Long productId) {
+        return reviewRepository.findAllByProductId(pageable, productId).map(reviewReadMapper::map);
     }
 
     public void delete(Long id) {
