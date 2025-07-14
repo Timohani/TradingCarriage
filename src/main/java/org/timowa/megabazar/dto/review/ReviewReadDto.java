@@ -3,7 +3,6 @@ package org.timowa.megabazar.dto.review;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.timowa.megabazar.database.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +13,7 @@ public class ReviewReadDto {
 
     private Long id;
 
-    private User user;
+    private Long userId;
 
     private Long productId;
 

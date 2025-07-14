@@ -1,6 +1,5 @@
 package org.timowa.megabazar.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,15 +32,19 @@ public class ReviewService {
     private final ReviewCreateMapper reviewCreateMapper;
     private final ReviewReadMapper reviewReadMapper;
 
-    public ReviewReadDto createReview(@Valid ReviewCreateDto createDto, Long productId) {
+    public ReviewReadDto createReview(ReviewCreateDto createDto, Long productId) {
+        if (createDto.getRating() > 5 || createDto.getRating() < 1) {
+            throw new IllegalArgumentException("Review rate should be in range 1-5");
+        }
+
         Product product = productService.getObjectById(productId);
 
-        if (reviewRepository.findByUserAndProduct(createDto.getUser(), product).isPresent()) {
+        if (reviewRepository.findByUserIdAndProduct(createDto.getUserId(), product).isPresent()) {
             throw new ReviewForThisProductAlreadyExistsException("Review for product with id: "
                     + productId + " already exists from this user");
         }
         User user = userService.getLoginUser();
-        Review savedReview = reviewRepository.save(reviewCreateMapper.map(createDto, user));
+        Review savedReview = reviewRepository.save(reviewCreateMapper.map(createDto, user, product));
         return reviewReadMapper.map(savedReview);
     }
 

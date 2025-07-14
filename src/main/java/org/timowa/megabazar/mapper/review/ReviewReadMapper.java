@@ -11,7 +11,7 @@ public class ReviewReadMapper implements Mapper<Review, ReviewReadDto> {
     public ReviewReadDto map(Review fromObject) {
         return new ReviewReadDto(
                 fromObject.getId(),
-                fromObject.getUser(),
+                fromObject.getUser().getId(),
                 fromObject.getProduct().getId(),
                 fromObject.getRating(),
                 fromObject.getComment(),
