@@ -29,7 +29,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final UserService userService;
+    private final LoginContext loginContext;
 
     private final ProductReadMapper productReadMapper;
     private final ProductCreateMapper productCreateMapper;
@@ -58,7 +58,7 @@ public class ProductService {
         if (productRepository.findByName(createDto.getName()).isPresent()) {
             throw new ProductAlreadyExistsException("Product with name: " + createDto.getName() + " already exists");
         }
-        User user = userService.getLoginUser();
+        User user = loginContext.getLoginUser();
         Product savedProduct = productRepository.save(productCreateMapper.map(createDto, user));
         return productReadMapper.map(savedProduct);
     }
@@ -75,7 +75,7 @@ public class ProductService {
     }
 
     public void delete(Long id) {
-        Long userId = userService.getLoginUser().getId();
+        Long userId = loginContext.getLoginUser().getId();
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + "not found"));
         if (product.getCreator().getId().equals(userId)) {

@@ -1,7 +1,7 @@
 package org.timowa.megabazar.mapper.user;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.timowa.megabazar.database.entity.Role;
 import org.timowa.megabazar.database.entity.User;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class UserRegMapper implements Mapper<UserRegistrationDto, User> {
 
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     public User map(UserRegistrationDto dto) {

@@ -3,17 +3,12 @@ package org.timowa.megabazar.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.timowa.megabazar.dto.user.LoginRequest;
+import org.springframework.web.bind.annotation.*;
+import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.dto.user.UserReadDto;
 import org.timowa.megabazar.dto.user.UserRegistrationDto;
+import org.timowa.megabazar.mapper.user.UserReadMapper;
+import org.timowa.megabazar.service.LoginContext;
 import org.timowa.megabazar.service.UserService;
 
 @RestController
@@ -21,23 +16,44 @@ import org.timowa.megabazar.service.UserService;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService authService;
-    private final AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final UserReadMapper userReadMapper;
+    private final LoginContext loginContext;
+
 
     @PostMapping("/register")
     public ResponseEntity<UserReadDto> register(@Valid @RequestBody UserRegistrationDto dto) {
-        return ResponseEntity.ok(authService.registration(dto));
+        UserReadDto createdDto = userService.registration(dto);
+        loginContext.setLoginUser(userService.getUserByUsername(createdDto.getUsername()));
+        if (loginContext.getLoginUser() == null) {
+            throw new NullPointerException("Login user is null");
+        }
+        return ResponseEntity.ok(createdDto);
+    }
+
+    @GetMapping
+    public UserReadDto getLoginUser() {
+        User user = loginContext.getLoginUser();
+        if (user == null) {
+            throw new NullPointerException("Login user is null");
+        }
+        return userReadMapper.map(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.username(),
-                        request.password())
-                );
+    public ResponseEntity<Void> login(@RequestParam String username, @RequestParam String password) {
+        User user = userService.getUserByUsername(username);
+        if (user.getPassword().equals(password)) {
+            loginContext.setLoginUser(user);
+        } else {
+            throw new IllegalArgumentException("Password is incorrect");
+        }
+        return ResponseEntity.ok(null);
+    }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return ResponseEntity.ok().build();
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        loginContext.setLoginUser(null);
+        return ResponseEntity.ok(null);
     }
 }

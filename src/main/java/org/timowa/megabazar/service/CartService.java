@@ -22,7 +22,7 @@ import java.util.Optional;
 @Service
 public class CartService {
 
-    private final UserService userService;
+    private final LoginContext loginContext;
     private final ProductService productService;
 
     private final CartItemRepository cartItemRepository;
@@ -30,7 +30,7 @@ public class CartService {
     private final CartItemReadMapper cartItemReadMapper;
 
     public Cart getCurrentUserCart() {
-        User user = userService.getLoginUser();
+        User user = loginContext.getLoginUser();
         return user.getCart();
     }
 

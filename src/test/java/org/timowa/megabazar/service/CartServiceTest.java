@@ -4,9 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.timowa.megabazar.database.entity.*;
 import org.timowa.megabazar.database.repository.CartItemRepository;
@@ -17,7 +14,6 @@ import org.timowa.megabazar.exception.CartLimitExceededException;
 import org.timowa.megabazar.exception.ProductNotAvailableException;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,6 +23,9 @@ class CartServiceTest {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private LoginContext loginContext;
 
     @Autowired
     private UserRepository userRepository;
@@ -40,8 +39,6 @@ class CartServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Очищаем SecurityContext перед каждым тестом
-        SecurityContextHolder.clearContext();
 
         // Создаем и сохраняем тестового пользователя
         testUser = User.builder()
@@ -62,14 +59,7 @@ class CartServiceTest {
                 .build();
         productRepository.save(testProduct);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        testUser.getUsername(),
-                        "password",
-                        Collections.emptyList() // или реальные authorities
-                ));
-        SecurityContextHolder.setContext(context);
+        loginContext.setLoginUser(testUser);
     }
 
     @Test
