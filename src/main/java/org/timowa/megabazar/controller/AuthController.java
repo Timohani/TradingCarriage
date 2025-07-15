@@ -3,6 +3,7 @@ package org.timowa.megabazar.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.dto.user.UserReadDto;
@@ -19,6 +20,8 @@ public class AuthController {
     private final UserService userService;
     private final UserReadMapper userReadMapper;
     private final LoginContext loginContext;
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
     @PostMapping("/register")
@@ -43,7 +46,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestParam String username, @RequestParam String password) {
         User user = userService.getUserByUsername(username);
-        if (user.getPassword().equals(password)) {
+
+        if (passwordEncoder.matches(password, user.getPassword())) {
             loginContext.setLoginUser(user);
         } else {
             throw new IllegalArgumentException("Password is incorrect");
