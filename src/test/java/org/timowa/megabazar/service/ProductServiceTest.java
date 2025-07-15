@@ -5,9 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.timowa.megabazar.database.entity.Cart;
 import org.timowa.megabazar.database.entity.Role;
@@ -19,7 +16,6 @@ import org.timowa.megabazar.exception.ProductAlreadyExistsException;
 import org.timowa.megabazar.exception.ProductNotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,6 +26,8 @@ class ProductServiceTest {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private LoginContext loginContext;
     @Autowired
     private UserRepository userRepository;
 
@@ -48,14 +46,7 @@ class ProductServiceTest {
                 .build();
         userRepository.save(testUser);
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        testUser.getUsername(),
-                        "password",
-                        Collections.emptyList()
-                ));
-        SecurityContextHolder.setContext(context);
+        loginContext.setLoginUser(testUser);
 
         testProductCreateEditDto = new ProductCreateEditDto(
                 "Фен",

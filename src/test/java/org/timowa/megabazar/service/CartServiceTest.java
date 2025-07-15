@@ -56,6 +56,7 @@ class CartServiceTest {
                 .name("Test Product")
                 .price(100.0)
                 .quantity(10)
+                .creator(testUser)
                 .build();
         productRepository.save(testProduct);
 
