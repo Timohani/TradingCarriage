@@ -6,7 +6,7 @@
 ## Технологии
 
 - **Язык программирования**: Java 17
-- **Фреймворки**: Spring Boot, Spring Data JPA, Spring Web, Spring Security
+- **Фреймворки**: Spring Boot, Spring Data JPA, Spring Web
 - **База данных**: PostgreSQL
 - **Сборка**: Gradle
 - **Тестирование**: JUnit, Mockito
