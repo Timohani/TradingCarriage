@@ -38,12 +38,12 @@ public class ReviewService {
         }
 
         Product product = productService.getObjectById(productId);
-
-        if (reviewRepository.findByUserIdAndProduct(createDto.getUserId(), product).isPresent()) {
+        User user = loginContext.getLoginUser();
+        if (reviewRepository.findByUserIdAndProduct(user.getId(), product).isPresent()) {
             throw new ReviewForThisProductAlreadyExistsException("Review for product with id: "
                     + productId + " already exists from this user");
         }
-        User user = loginContext.getLoginUser();
+
         Review savedReview = reviewRepository.save(reviewCreateMapper.map(createDto, user, product));
         return reviewReadMapper.map(savedReview);
     }
@@ -59,13 +59,12 @@ public class ReviewService {
     }
 
     public void delete(Long id) {
-        Long userId = loginContext.getLoginUser().getId();
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ReviewNotFoundException("Review with id: " + id + " not found"));
-        if (review.getUser().getId().equals(userId)) {
-            reviewRepository.delete(review);
+        Long loginUserId = loginContext.getLoginUser().getId();
+        ReviewReadDto readDto = findById(id);
+        if (readDto.getUserId().equals(loginUserId)) {
+            reviewRepository.deleteById(id);
             return;
         }
-        throw new UserNotFoundException("User not found");
+        throw new UserNotFoundException("User is not authenticated");
     }
 }
