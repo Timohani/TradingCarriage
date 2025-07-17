@@ -54,7 +54,7 @@ public class User {
     @ToString.Exclude
     @Builder.Default
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Product> product = new LinkedHashSet<>();
+    private Set<Product> products = new LinkedHashSet<>();
 
     @Override
     public final boolean equals(Object o) {
