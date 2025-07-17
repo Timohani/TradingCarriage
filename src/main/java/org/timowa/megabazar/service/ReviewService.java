@@ -50,7 +50,7 @@ public class ReviewService {
 
     public ReviewReadDto findById(Long id) {
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ReviewNotFoundException("Review with id " + id + " not found"));
+                .orElseThrow(() -> new ReviewNotFoundException("Review with id: " + id + " not found"));
         return reviewReadMapper.map(review);
     }
 
@@ -61,7 +61,7 @@ public class ReviewService {
     public void delete(Long id) {
         Long userId = loginContext.getLoginUser().getId();
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ReviewNotFoundException("Review with id " + id + " not found"));
+                .orElseThrow(() -> new ReviewNotFoundException("Review with id: " + id + " not found"));
         if (review.getUser().getId().equals(userId)) {
             reviewRepository.delete(review);
             return;
