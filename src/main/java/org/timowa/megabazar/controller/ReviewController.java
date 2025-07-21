@@ -17,9 +17,9 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @GetMapping("{productId}")
+    @GetMapping("product/{productId}")
     public ResponseEntity<PagedModel<ReviewReadDto>> findAll(
-            @PathVariable Long productId, @RequestBody Pageable pageable) {
+            @PathVariable Long productId, Pageable pageable) {
         Page<ReviewReadDto> page = reviewService.findAllByProductId(pageable, productId);
         return ResponseEntity.ok()
                 .body(new PagedModel<>(page));

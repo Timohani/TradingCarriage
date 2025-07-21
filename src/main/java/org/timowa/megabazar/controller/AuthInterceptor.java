@@ -25,7 +25,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             for (Cookie cookie : cookies) {
                 String cookieValue = cookie.getValue();
                 if ("loginUser".equals(cookie.getName()) && cookieValue != null) {
-                    System.out.println("Username from cookie: " + cookieValue);
                     User userFromCookie = userService.getUserByUsername(cookieValue);
                     loginContext.setLoginUser(userFromCookie);
                 }

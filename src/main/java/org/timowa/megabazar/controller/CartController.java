@@ -2,7 +2,6 @@ package org.timowa.megabazar.controller;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -32,7 +31,7 @@ public class CartController {
     private final CartItemReadMapper cartItemReadMapper;
 
     @GetMapping
-    public PagedModel<CartItemReadDto> getCart(@ParameterObject Pageable pageable) {
+    public PagedModel<CartItemReadDto> getCart(Pageable pageable) {
         Cart cart = cartService.getCurrentUserCart();
         Page<CartItemReadDto> cartItems = cartItemRepository.findAllByCartId(cart.getId(), pageable).map(cartItemReadMapper::map);
         return new PagedModel<>(cartItems);

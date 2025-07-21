@@ -1,7 +1,6 @@
 package org.timowa.megabazar.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -25,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping
-    public PagedModel<UserInfoDto> getAllUsers(@ParameterObject Pageable pageable) {
+    public PagedModel<UserInfoDto> getAllUsers(Pageable pageable) {
         Page<UserInfoDto> userPage = userService.findAll(pageable);
         return new PagedModel<>(userPage);
     }

@@ -3,7 +3,6 @@ package org.timowa.megabazar.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -38,7 +37,7 @@ public class ProductController {
     private final ObjectMapper objectMapper;
 
     @GetMapping
-    public PagedModel<ProductReadDto> getAll(@ParameterObject Pageable pageable) {
+    public PagedModel<ProductReadDto> getAll(Pageable pageable) {
         Page<ProductReadDto> products = productService.findAll(pageable);
         return new PagedModel<>(products);
     }
@@ -46,11 +45,6 @@ public class ProductController {
     @GetMapping("/{id}")
     public ProductReadDto getOne(@PathVariable Long id) {
         return productService.findById(id);
-    }
-
-    @GetMapping("/by-ids")
-    public List<Product> getMany(@RequestParam List<Long> ids) {
-        return productRepository.findAllById(ids);
     }
 
     @PostMapping
