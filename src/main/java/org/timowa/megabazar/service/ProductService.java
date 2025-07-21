@@ -11,13 +11,11 @@ import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.ProductRepository;
 import org.timowa.megabazar.dto.product.ProductCreateEditDto;
-import org.timowa.megabazar.dto.product.ProductListReadDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.exception.ProductAlreadyExistsException;
 import org.timowa.megabazar.exception.ProductNotFoundException;
 import org.timowa.megabazar.exception.UserNotFoundException;
 import org.timowa.megabazar.mapper.product.ProductCreateMapper;
-import org.timowa.megabazar.mapper.product.ProductListReadMapper;
 import org.timowa.megabazar.mapper.product.ProductReadMapper;
 
 import java.util.Optional;
@@ -33,10 +31,9 @@ public class ProductService {
 
     private final ProductReadMapper productReadMapper;
     private final ProductCreateMapper productCreateMapper;
-    private final ProductListReadMapper productListReadMapper;
 
-    public Page<ProductListReadDto> findAll(Pageable pageable) {
-        return productRepository.findAll(pageable).map(product -> productListReadMapper.map(product, isAvailable(product)));
+    public Page<ProductReadDto> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable).map(product -> productReadMapper.map(product, isAvailable(product)));
     }
 
     public boolean isAvailable(Product product) {
