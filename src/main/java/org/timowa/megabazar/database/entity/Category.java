@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,9 +27,9 @@ public class Category {
 
     private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {

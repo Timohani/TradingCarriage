@@ -1,5 +1,6 @@
 package org.timowa.megabazar.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.timowa.megabazar.database.entity.Category;
+import org.timowa.megabazar.database.entity.Product;
+import org.timowa.megabazar.database.repository.CategoryRepository;
+import org.timowa.megabazar.database.repository.ProductRepository;
 import org.timowa.megabazar.dto.category.CategoryCreateDto;
 import org.timowa.megabazar.dto.category.CategoryReadDto;
 import org.timowa.megabazar.exception.CategoryAlreadyExistsException;
@@ -23,43 +27,83 @@ class CategoryServiceTest {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    private Category savedCategoryTest;
+    private CategoryCreateDto createDtoToSave;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @BeforeEach
+    void setUp() {
+        // For create tests
+        createDtoToSave = new CategoryCreateDto("Мебель", "Описание");
+
+    }
+
+    void saveTestCategory() {
+        Category testCategory = Category.builder()
+                .name("Мебель")
+                .description("Описание")
+                .build();
+        savedCategoryTest = categoryRepository.save(testCategory);
+    }
+
     @Test
     void createCategory() {
-        CategoryCreateDto createDto = new CategoryCreateDto("Мебель", "Описание");
-        CategoryReadDto readDto = categoryService.createCategory(createDto);
-        CategoryReadDto checkCategory = categoryService.findById(readDto.getId());
+        CategoryReadDto createdReadDto = categoryService.createCategory(createDtoToSave);
+        CategoryReadDto checkCategory = categoryService.findById(createdReadDto.getId());
         assertNotNull(checkCategory);
-        assertEquals(readDto.getName(), checkCategory.getName());
+        assertEquals(createDtoToSave.getName(), checkCategory.getName());
+    }
 
-        CategoryCreateDto sameCreateDto = new CategoryCreateDto("Мебель", "");
-        assertThrows(CategoryAlreadyExistsException.class, () -> categoryService.createCategory(sameCreateDto));
+    @Test
+    void createCategory_shouldFail_whenAlreadyExists() {
+        saveTestCategory();
+        assertThrows(CategoryAlreadyExistsException.class, () -> categoryService.createCategory(createDtoToSave));
     }
 
     @Test
     void findById() {
-        CategoryCreateDto createDto = new CategoryCreateDto("Одежда", "");
-        CategoryReadDto readDto = categoryService.createCategory(createDto);
-        CategoryReadDto actual = categoryService.findById(readDto.getId());
-        assertEquals(readDto.getName(), actual.getName());
+        saveTestCategory();
+        CategoryReadDto actual = categoryService.findById(savedCategoryTest.getId());
+        assertEquals(savedCategoryTest.getName(), actual.getName());
+    }
 
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.findById(993L));
+    @Test
+    void findById_shouldFail_whenNotFound() {
+        saveTestCategory();
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.findById(79_993L));
     }
 
     @Test
     void findAllByPageable() {
-        CategoryCreateDto createDto = new CategoryCreateDto("Одежда", "");
-        categoryService.createCategory(createDto);
+        saveTestCategory();
         Pageable sortedByProductsCount =
                 PageRequest.of(0, 10, Sort.by("name"));
-        Page<Category> page = categoryService.findAll(sortedByProductsCount);
+        Page<CategoryReadDto> page = categoryService.findAll(sortedByProductsCount);
         assertEquals(1, page.getTotalElements());
     }
 
     @Test
     void delete() {
-        CategoryCreateDto createDto = new CategoryCreateDto("Принтеры", "");
-        CategoryReadDto readDto = categoryService.createCategory(createDto);
-        categoryService.delete(readDto.getId());
-        assertThrows(CategoryNotFoundException.class, () -> categoryService.findById(readDto.getId()));
+        saveTestCategory();
+        categoryService.delete(savedCategoryTest.getId());
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.findById(savedCategoryTest.getId()));
+    }
+
+    @Test
+    void addProductToCategory() {
+        saveTestCategory();
+        Product savedProduct = productRepository.save(Product.builder()
+                .name("Product")
+                .description("Desc")
+                .quantity(52)
+                .price(993.0)
+                .build());
+        categoryService.addProductToCategory(savedProduct.getId(), savedCategoryTest);
+        assertTrue(savedCategoryTest.getProducts().contains(savedProduct));
     }
 }
