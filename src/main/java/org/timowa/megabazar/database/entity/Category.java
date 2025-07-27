@@ -29,6 +29,7 @@ public class Category {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @Builder.Default
     private List<Product> products = new ArrayList<>();
 
     @Override
