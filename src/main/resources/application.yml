@@ -3,7 +3,7 @@ spring:
     activate:
       on-profile: "default"
   datasource:
-    url: jdbc:postgresql://localhost:5432/megabazar
+    url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
@@ -20,7 +20,7 @@ spring:
     activate:
       on-profile: "docker"
   datasource:
-    url: jdbc:postgresql://db:5432/megabazar
+    url: jdbc:postgresql://db:5432/postgres
     username: postgres
     password: root
     driver-class-name: org.postgresql.Driver
