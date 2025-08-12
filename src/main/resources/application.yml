@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: "default"
   datasource:
     url: jdbc:postgresql://localhost:5432/megabazar
     username: postgres
@@ -7,3 +10,23 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+  datasource:
+    url: jdbc:postgresql://db:5432/megabazar
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

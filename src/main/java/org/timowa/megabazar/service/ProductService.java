@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.ProductRepository;
+import org.timowa.megabazar.database.repository.UserRepository;
 import org.timowa.megabazar.dto.product.ProductCreateEditDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.exception.ProductAlreadyExistsException;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
     private final LoginContext loginContext;
 
     private final ProductReadMapper productReadMapper;
@@ -55,7 +57,9 @@ public class ProductService {
         if (productRepository.findByName(createDto.getName()).isPresent()) {
             throw new ProductAlreadyExistsException("Product with name: " + createDto.getName() + " already exists");
         }
-        User user = loginContext.getLoginUser();
+        Long currentUserId = loginContext.getLoginUser().getId();
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         Product savedProduct = productRepository.save(productCreateMapper.map(createDto, user));
         return productReadMapper.map(savedProduct);
     }

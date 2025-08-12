@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.timowa.megabazar.database.entity.Category;
 import org.timowa.megabazar.database.entity.Product;
+import org.timowa.megabazar.database.entity.Role;
+import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.CategoryRepository;
 import org.timowa.megabazar.database.repository.ProductRepository;
 import org.timowa.megabazar.dto.category.CategoryCreateDto;
@@ -102,6 +104,12 @@ class CategoryServiceTest {
                 .description("Desc")
                 .quantity(52)
                 .price(993.0)
+                .creator(User.builder()
+                        .username("test")
+                        .email("test@test.test")
+                        .password("123456")
+                        .role(Role.SELLER)
+                        .build())
                 .build());
         categoryService.addProductToCategory(savedProduct.getId(), savedCategoryTest);
         assertTrue(savedCategoryTest.getProducts().contains(savedProduct));

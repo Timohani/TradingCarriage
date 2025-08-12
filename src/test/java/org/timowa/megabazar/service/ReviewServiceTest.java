@@ -59,6 +59,7 @@ public class ReviewServiceTest {
                 .description("mega product")
                 .price(9999)
                 .quantity(1234)
+                .creator(testUser)
                 .build();
         testProduct = productRepository.save(productToSave);
 
