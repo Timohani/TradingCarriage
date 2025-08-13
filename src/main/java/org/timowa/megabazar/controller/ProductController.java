@@ -3,6 +3,7 @@ package org.timowa.megabazar.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -21,7 +22,6 @@ import org.timowa.megabazar.service.CartService;
 import org.timowa.megabazar.service.ProductService;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,29 +67,23 @@ public class ProductController {
         return productRepository.save(product);
     }
 
-    @PatchMapping
-    public List<Long> patchMany(@RequestParam List<Long> ids, @RequestBody JsonNode patchNode) throws IOException {
-        Collection<Product> products = productRepository.findAllById(ids);
-
-        for (Product product : products) {
-            objectMapper.readerForUpdating(product).readValue(patchNode);
-        }
-
-        List<Product> resultProducts = productRepository.saveAll(products);
-        return resultProducts.stream()
-                .map(Product::getId)
-                .toList();
-    }
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        productService.delete(id);
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        try {
+            productService.delete(id);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteMany(@RequestParam List<Long> ids) {
-        productRepository.deleteAllById(ids);
+    public ResponseEntity<String> deleteMany(@RequestParam List<Long> ids) {
+        try {
+            productService.deleteMany(ids);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
         return ResponseEntity.ok().build();
     }
 

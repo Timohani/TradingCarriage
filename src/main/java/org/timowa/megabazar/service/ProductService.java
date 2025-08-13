@@ -2,6 +2,7 @@ package org.timowa.megabazar.service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import org.timowa.megabazar.exception.UserNotFoundException;
 import org.timowa.megabazar.mapper.product.ProductCreateMapper;
 import org.timowa.megabazar.mapper.product.ProductReadMapper;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -75,14 +77,26 @@ public class ProductService {
         return productReadMapper.map(savedProduct);
     }
 
-    public void delete(Long id) {
-        Long userId = loginContext.getLoginUser().getId();
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + "not found"));
-        if (product.getCreator().getId().equals(userId)) {
-            productRepository.delete(product);
-            return;
+    public void delete(Long id) throws AuthenticationException {
+        if (checkCreator(id)) {
+            productRepository.deleteById(id);
         }
-        throw new UserNotFoundException("User not found");
+    }
+
+    public void deleteMany(List<Long> ids) throws AuthenticationException {
+        for (Long id : ids) {
+            if (checkCreator(id)) {
+                productRepository.deleteById(id);
+            }
+        }
+    }
+
+    boolean checkCreator(Long productId) throws AuthenticationException {
+        Long userId = loginContext.getLoginUser().getId();
+        Product product = getObjectById(productId);
+        if (!product.getCreator().getId().equals(userId)) {
+            throw new AuthenticationException("You have no permission to delete product");
+        }
+        return true;
     }
 }
