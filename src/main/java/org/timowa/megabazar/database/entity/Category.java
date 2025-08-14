@@ -27,7 +27,7 @@ public class Category {
 
     private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category")
     @ToString.Exclude
     @Builder.Default
     private List<Product> products = new ArrayList<>();

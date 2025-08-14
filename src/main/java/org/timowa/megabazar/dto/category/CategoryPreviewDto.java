@@ -2,19 +2,13 @@ package org.timowa.megabazar.dto.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.timowa.megabazar.dto.product.ProductReadDto;
-
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class CategoryReadDto {
-
+public class CategoryPreviewDto {
     private Long id;
 
     private String name;
 
     private String description;
-
-    private List<ProductReadDto> productsDto;
 }

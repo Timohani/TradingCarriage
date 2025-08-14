@@ -12,11 +12,15 @@ import org.timowa.megabazar.database.entity.Category;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.repository.CategoryRepository;
 import org.timowa.megabazar.dto.category.CategoryCreateDto;
+import org.timowa.megabazar.dto.category.CategoryPreviewDto;
 import org.timowa.megabazar.dto.category.CategoryReadDto;
+import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.exception.CategoryAlreadyExistsException;
 import org.timowa.megabazar.exception.CategoryNotFoundException;
 import org.timowa.megabazar.mapper.category.CategoryCreateMapper;
+import org.timowa.megabazar.mapper.category.CategoryPreviewMapper;
 import org.timowa.megabazar.mapper.category.CategoryReadMapper;
+import org.timowa.megabazar.mapper.product.ProductReadMapper;
 
 @Slf4j
 @Service
@@ -27,6 +31,8 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryCreateMapper categoryCreateMapper;
     private final CategoryReadMapper categoryReadMapper;
+    private final CategoryPreviewMapper categoryPreviewMapper;
+    private final ProductReadMapper productReadMapper;
     private final ProductService productService;
 
     public CategoryReadDto createCategory(@Valid CategoryCreateDto createDto) {
@@ -37,15 +43,28 @@ public class CategoryService {
         return categoryReadMapper.map(savedCategory);
     }
 
-    public CategoryReadDto addProductToCategory(Long productId, Category category) {
+    public ProductReadDto addProductToCategory(Long productId, Long categoryId) {
         Product product = productService.getObjectById(productId);
+        Category category = getObjectById(categoryId);
         if (product.getCategory() == null) {
             product.setCategory(category);
             category.getProducts().add(product);
         } else {
             throw new IllegalArgumentException("Product already has category");
         }
-        return categoryReadMapper.map(category);
+        return productReadMapper.map(product);
+    }
+
+    public ProductReadDto removeProductFromCategory(Long productId, Long categoryId) {
+        Product product = productService.getObjectById(productId);
+        Category category = getObjectById(categoryId);
+        if (product.getCategory() != null) {
+            product.setCategory(null);
+            category.getProducts().remove(product);
+        } else {
+            throw new IllegalArgumentException("Product already has no category");
+        }
+        return productReadMapper.map(product);
     }
 
     public CategoryReadDto findById(Long id) {
@@ -54,12 +73,12 @@ public class CategoryService {
         return categoryReadMapper.map(checkCategory);
     }
 
-    public Page<CategoryReadDto> findAll(Pageable pageable) {
+    public Page<CategoryPreviewDto> findAll(Pageable pageable) {
         return categoryRepository.findAll(pageable)
-                .map(categoryReadMapper::map);
+                .map(categoryPreviewMapper::map);
     }
 
-    public Category getObjectById(Long id) {
+    Category getObjectById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category with id: " + id + " not found"));
     }

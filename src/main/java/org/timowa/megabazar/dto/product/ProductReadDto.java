@@ -3,7 +3,6 @@ package org.timowa.megabazar.dto.product;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.timowa.megabazar.database.entity.Category;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +19,7 @@ public class ProductReadDto {
 
     private int quantity;
 
-    private Category category;
+    private String categoryName;
 
     private boolean isAvailable;
 

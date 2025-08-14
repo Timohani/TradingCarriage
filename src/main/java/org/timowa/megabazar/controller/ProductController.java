@@ -18,6 +18,7 @@ import org.timowa.megabazar.dto.product.ProductCreateEditDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.exception.CartLimitExceededException;
 import org.timowa.megabazar.exception.ProductNotAvailableException;
+import org.timowa.megabazar.mapper.product.ProductReadMapper;
 import org.timowa.megabazar.service.CartService;
 import org.timowa.megabazar.service.ProductService;
 
@@ -32,6 +33,7 @@ public class ProductController {
 
     private final ProductRepository productRepository;
     private final ProductService productService;
+    private final ProductReadMapper productReadMapper;
     private final CartService cartService;
 
     private final ObjectMapper objectMapper;
@@ -58,13 +60,13 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}")
-    public Product patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
+    public ProductReadDto patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
         Product product = productRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
 
         objectMapper.readerForUpdating(product).readValue(patchNode);
-
-        return productRepository.save(product);
+        productRepository.save(product);
+        return productReadMapper.map(product);
     }
 
     @DeleteMapping("/{id}")
@@ -72,7 +74,7 @@ public class ProductController {
         try {
             productService.delete(id);
         } catch (AuthenticationException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(405).body(e.getMessage());
         }
         return ResponseEntity.ok().build();
     }
@@ -82,7 +84,7 @@ public class ProductController {
         try {
             productService.deleteMany(ids);
         } catch (AuthenticationException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(405).body(e.getMessage());
         }
         return ResponseEntity.ok().build();
     }

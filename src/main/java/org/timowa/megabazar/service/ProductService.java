@@ -37,11 +37,7 @@ public class ProductService {
     private final ProductCreateMapper productCreateMapper;
 
     public Page<ProductReadDto> findAll(Pageable pageable) {
-        return productRepository.findAll(pageable).map(product -> productReadMapper.map(product, isAvailable(product)));
-    }
-
-    public boolean isAvailable(Product product) {
-        return product.getQuantity() > 0;
+        return productRepository.findAll(pageable).map(productReadMapper::map);
     }
 
     Product getObjectById(Long id) {
@@ -52,7 +48,7 @@ public class ProductService {
     public ProductReadDto findById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
-        return productReadMapper.map(product, isAvailable(product));
+        return productReadMapper.map(product);
     }
 
     public ProductReadDto create(@Valid ProductCreateEditDto createDto) {
