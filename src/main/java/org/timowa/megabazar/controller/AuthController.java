@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.timowa.megabazar.database.entity.Role;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.dto.user.UserReadDto;
 import org.timowa.megabazar.dto.user.UserRegistrationDto;
@@ -61,7 +62,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestParam String username, @RequestParam String password, HttpServletResponse response) {
+    public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password, HttpServletResponse response) {
         User user = userService.getUserByUsername(username);
 
         if (passwordEncoder.matches(password, user.getPassword())) {
@@ -74,13 +75,29 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<?> logout(HttpServletResponse response) {
         loginContext.setLoginUser(null);
         Cookie cookie = new Cookie("loginUser", null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);
         return ResponseEntity.ok(null);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteCurrentUser() {
+        userService.deleteUser(loginContext.getLoginUser().getId());
+        return ResponseEntity.ok().body(null);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
+        User currentUser = userService.getUserByUsername(loginContext.getLoginUser().getUsername());
+        if (currentUser.getRole().equals(Role.ADMIN)) {
+            userService.deleteUser(id);
+            return ResponseEntity.ok().body(null);
+        }
+        return ResponseEntity.status(405).body("You have no permission to delete this user");
     }
 
     private void setLoginCookie(HttpServletResponse response, String username) {

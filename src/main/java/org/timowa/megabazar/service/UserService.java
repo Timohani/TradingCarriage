@@ -74,4 +74,9 @@ public class UserService {
         return userRepository.findAll(pageable)
                 .map(userInfoMapper::map);
     }
+
+    public void deleteUser(Long id) {
+        UserInfoDto user = getUserById(id);
+        userRepository.deleteById(user.getId());
+    }
 }
