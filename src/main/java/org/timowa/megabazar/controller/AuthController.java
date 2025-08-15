@@ -31,7 +31,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserReadDto> register(@Valid @RequestBody UserRegistrationDto dto, HttpServletResponse response) {
         UserReadDto createdDto = userService.registration(dto);
-        loginContext.setLoginUser(userService.getUserByUsername(createdDto.getUsername()));
+        loginContext.setLoginUser(userService.getObjectByUsername(createdDto.getUsername()));
         setLoginCookie(response, createdDto.getUsername());
         if (loginContext.getLoginUser() == null) {
             throw new NullPointerException("Login user is null");
@@ -48,7 +48,7 @@ public class AuthController {
                 String cookieValue = cookie.getValue();
                 if ("loginUser".equals(cookie.getName()) && cookieValue != null) {
                     System.out.println("Username from cookie: " + cookieValue);
-                    User userFromCookie = userService.getUserByUsername(cookieValue);
+                    User userFromCookie = userService.getObjectByUsername(cookieValue);
                     loginContext.setLoginUser(userFromCookie);
                 }
             }
@@ -63,7 +63,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password, HttpServletResponse response) {
-        User user = userService.getUserByUsername(username);
+        User user = userService.getObjectByUsername(username);
 
         if (passwordEncoder.matches(password, user.getPassword())) {
             loginContext.setLoginUser(user);
@@ -92,7 +92,7 @@ public class AuthController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
-        User currentUser = userService.getUserByUsername(loginContext.getLoginUser().getUsername());
+        User currentUser = userService.getObjectByUsername(loginContext.getLoginUser().getUsername());
         if (currentUser.getRole().equals(Role.ADMIN)) {
             userService.deleteUser(id);
             return ResponseEntity.ok().body(null);

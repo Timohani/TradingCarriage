@@ -56,6 +56,8 @@ public class User {
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> products = new LinkedHashSet<>();
 
+    private Integer money = Integer.valueOf("0");
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
