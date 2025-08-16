@@ -19,5 +19,5 @@ public class UserProfileDto {
 
     private LocalDateTime createdAt;
 
-    private Integer money;
+    private Double money;
 }

@@ -71,12 +71,9 @@ public class UserService {
         if (count <= 0) {
             throw new IllegalArgumentException("Number must be more than 0");
         }
-        // Настраиваемые параметры:
-        double k = 0.001;      // Чем больше, тем резче падает вероятность
-        int offset = 1000;     // Число, после которого вероятность резко снижается
 
-        // Формула сигмоиды (вероятность падает с ростом числа)
-        double probability = 1.0 / (1 + Math.exp(k * (count - offset)));
+        // Гиперболическое убывание (вероятность падает с ростом числа)
+        double probability = 1.0 / (1 + 0.000001 * count * count);
 
         boolean chance = random.nextDouble() < probability;
         if (chance) {
