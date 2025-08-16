@@ -8,6 +8,7 @@ import org.timowa.megabazar.database.entity.CartItem;
 import org.timowa.megabazar.database.entity.Product;
 import org.timowa.megabazar.database.entity.User;
 import org.timowa.megabazar.database.repository.CartItemRepository;
+import org.timowa.megabazar.database.repository.CartRepository;
 import org.timowa.megabazar.dto.cartItem.CartItemReadDto;
 import org.timowa.megabazar.dto.product.ProductReadDto;
 import org.timowa.megabazar.exception.CartItemNotFoundException;
@@ -15,6 +16,7 @@ import org.timowa.megabazar.exception.CartLimitExceededException;
 import org.timowa.megabazar.exception.ProductNotAvailableException;
 import org.timowa.megabazar.mapper.cartItem.CartItemReadMapper;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,12 +28,22 @@ public class CartService {
     private final ProductService productService;
 
     private final CartItemRepository cartItemRepository;
+    private final CartRepository cartRepository;
 
     private final CartItemReadMapper cartItemReadMapper;
 
     public Cart getCurrentUserCart() {
         User user = loginContext.getLoginUser();
-        return user.getCart();
+        Cart cart = user.getCart();
+        if (cart == null) {
+            Cart newCart = Cart.builder()
+                    .user(user)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            cartRepository.save(newCart);
+            return newCart;
+        }
+        return cart;
     }
 
     public CartItemReadDto addItemToCart(Long productId) throws ProductNotAvailableException, CartLimitExceededException {
