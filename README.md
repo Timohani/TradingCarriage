@@ -9,9 +9,8 @@
 - **Фреймворки**: Spring Boot, Spring Data JPA, Spring Web
 - **База данных**: PostgreSQL
 - **Сборка**: Gradle
-- **Тестирование**: JUnit, Mockito
+- **Тестирование**: JUnit
 - **Документация API**: Swagger UI
-- **Логирование**: SLF4J
 
 
 ## Функционал
